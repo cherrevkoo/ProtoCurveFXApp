@@ -13,18 +13,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ProtoCurveController {
-
     @FXML
     private AnchorPane anchorPane;
-
     @FXML
     private Canvas canvas;
-
     private BezierCurve bezierCurve;
-
     private final List<Point2D> points = new ArrayList<>();
     private int draggedPointIndex = -1;
-
     private final double radius = 6;
 
     @FXML
@@ -34,8 +29,8 @@ public class ProtoCurveController {
         canvas.widthProperty().bind(anchorPane.widthProperty());
         canvas.heightProperty().bind(anchorPane.heightProperty());
 
-        canvas.setOnMousePressed(this::handleMousePressed);
-        canvas.setOnMouseDragged(this::handleMouseDragged);
+        canvas.setOnMousePressed(event -> handleMousePressed(event));
+        canvas.setOnMouseDragged(event -> handleMouseDragged(event));
         canvas.setOnMouseReleased(event-> draggedPointIndex = -1);
     }
 
@@ -44,8 +39,17 @@ public class ProtoCurveController {
 
         for (int i = 0; i < points.size(); i++) {
             if (click.distance(points.get(i)) <= radius) {
-                draggedPointIndex = i;
-                return;
+
+                if (event.getButton() == MouseButton.SECONDARY) {
+                    points.remove(i);
+                    redraw();
+                    return;
+                }
+
+                if (event.getButton() == MouseButton.PRIMARY) {
+                    draggedPointIndex = i;
+                    return;
+                }
             }
         }
 
